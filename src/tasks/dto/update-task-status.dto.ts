@@ -4,6 +4,9 @@ import { IsEnum } from 'class-validator';
 
 export class UpdateTaskStatusDTO {
   @IsEnum(TaskStatus)
-  @ApiProperty({ type: String, description: 'OPEN,IN_PROGRESS or DONE' })
+  @ApiProperty({
+    type: String,
+    description: 'One of these OPEN,IN_PROGRESS or DONE',
+  })
   status: TaskStatus;
 }

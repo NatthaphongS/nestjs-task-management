@@ -9,9 +9,9 @@ import {
 
 export class AuthCredentialsDto {
   @IsString()
-  @MinLength(8)
+  @MinLength(5)
   @MaxLength(20)
-  @ApiProperty({ type: String, description: 'Username' })
+  @ApiProperty({ type: String, description: 'Contain 5-20 character' })
   username: string;
 
   @IsString()
@@ -21,6 +21,10 @@ export class AuthCredentialsDto {
     message: 'password is to weak',
     // custom message for error validation
   })
-  @ApiProperty({ type: String, description: 'Password' })
+  @ApiProperty({
+    type: String,
+    description:
+      'Contain 8-32 character with at least 1 upper case letter,1 lower case letter,1 number or special character',
+  })
   password: string;
 }

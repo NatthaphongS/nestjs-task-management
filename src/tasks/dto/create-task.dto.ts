@@ -3,10 +3,10 @@ import { IsNotEmpty } from 'class-validator';
 
 export class CreateTaskDTO {
   @IsNotEmpty()
-  @ApiProperty({ type: String, description: 'Title' })
+  @ApiProperty({ type: String, description: "Can't be empty" })
   title: string;
 
   @IsNotEmpty()
-  @ApiProperty({ type: String, description: 'Description' })
+  @ApiProperty({ type: String, description: "Can't be empty" })
   description: string;
 }
