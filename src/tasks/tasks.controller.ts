@@ -7,15 +7,29 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import { Task, TaskStatus } from './task.model';
+import { TaskStatus } from './task-status.enum';
 import { CreateTaskDTO } from './dto/create-task.dto';
 import { GetTasksFilterDTO } from './dto/get-tasks-filter.dto';
+import { UpdateTaskStatusDTO } from './dto/update-task-status.dto';
+import { Task } from './task.entity';
+import { AuthGuard } from '@nestjs/passport';
+import { User } from 'src/auth/user.entity';
+import { GetUser } from 'src/auth/get-user.decorator';
+import { Logger } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('tasks')
+@UseGuards(AuthGuard())
 export class TasksController {
+  private logger = new Logger('TaskController');
+
   constructor(private tasksService: TasksService) {}
+
+  // see first form(not connect with database) hidden
+  /*
   @Get()
   getTasks(@Query() filterDto: GetTasksFilterDTO): Task[] {
     // don't need to be the same name in service but many time it make sense to be a same name
@@ -62,8 +76,55 @@ export class TasksController {
   // best practice to tell what field to be patch
   updateTaskStatus(
     @Param('id') id: string,
-    @Body('status') status: TaskStatus,
+    @Body() updateTaskStatusDTO: UpdateTaskStatusDTO,
   ): Task {
+    const { status } = updateTaskStatusDTO;
     return this.tasksService.updateTaskStatus(id, status);
+  }
+  */
+
+  @Get()
+  @ApiBearerAuth()
+  getTasks(
+    @Query() filterDto: GetTasksFilterDTO,
+    @GetUser() user: User,
+  ): Promise<Task[]> {
+    this.logger.verbose(
+      `User ${user.username} retrieving all tasks. Filter : ${JSON.stringify(filterDto)}`,
+    );
+    return this.tasksService.getTasks(filterDto, user);
+  }
+
+  @Get('/:id')
+  @ApiBearerAuth()
+  getTaskById(@Param('id') id: string, @GetUser() user: User): Promise<Task> {
+    return this.tasksService.getTaskById(id, user);
+  }
+
+  @Post()
+  @ApiBearerAuth()
+  createTask(
+    @Body() createTaskDTO: CreateTaskDTO,
+    @GetUser() user: User,
+  ): Promise<Task> {
+    return this.tasksService.createTask(createTaskDTO, user);
+  }
+
+  @Delete('/:id')
+  @ApiBearerAuth()
+  deleteTask(@Param('id') id: string, @GetUser() user: User): Promise<void> {
+    return this.tasksService.deleteTask(id, user);
+  }
+
+  @Patch('/:id/status')
+  @ApiBearerAuth()
+  // best practice to tell what field to be patch
+  updateTaskStatus(
+    @Param('id') id: string,
+    @Body() updateTaskStatusDTO: UpdateTaskStatusDTO,
+    @GetUser() user: User,
+  ): Promise<Task> {
+    const { status } = updateTaskStatusDTO;
+    return this.tasksService.updateTaskStatus(id, status, user);
   }
 }
