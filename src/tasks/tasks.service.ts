@@ -9,7 +9,7 @@ import { User } from 'src/auth/user.entity';
 
 @Injectable()
 export class TasksService {
-  // private tasks: Task[] = []; wewill use database instread
+  // private tasks: Task[] = []; we will use database instread
   // give private accessor because we don't want anyone of another class change tasks
   // see first form that was hidden
   /*

@@ -19,6 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: JwtPayload): Promise<User> {
+    // validate was call by guard
     // Remember : return promise because it is a asyns function
     const { username } = payload;
     const user = await this.usersRepository.findOne({ username });
@@ -27,6 +28,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException();
     }
     return user;
-    // passport is going to do is it's goingto inject it into the request object of out controller
+    // passport is going to do is it's going to inject it into the request object of our controller
   }
 }
